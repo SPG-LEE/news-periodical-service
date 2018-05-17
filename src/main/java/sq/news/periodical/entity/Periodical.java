@@ -68,7 +68,7 @@ public class Periodical extends BaseEntity {
 	@ApiModelProperty(value = "阅读数量")
 	@JsonProperty
 	private long readCount;
-	@ApiModelProperty(value = "是否审核")
+	@ApiModelProperty(value = "版次")
 	@JsonProperty
 	private List<PeriodicalEdition> editions = new ArrayList<>();
 

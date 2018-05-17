@@ -48,7 +48,7 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("periodical api")
-                .termsOfServiceUrl("sq")
+                .termsOfServiceUrl("www.baidu.com")
                 .contact(new Contact("圣泉","sq","sq@sq.org"))
                 .version("v1.0.0")
                 .build();
