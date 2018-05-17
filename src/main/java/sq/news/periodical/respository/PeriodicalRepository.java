@@ -1,5 +1,6 @@
 package sq.news.periodical.respository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -16,4 +17,6 @@ public interface PeriodicalRepository extends JpaRepository<Periodical, Long>,
 		PeriodicalCustomRepository {
 
 	Page<Periodical> findByTitleLike(String title, Pageable pageRequest);
+
+    List<Periodical> findByPublishDateBefore(Date publishDate, Pageable pageable);
 }

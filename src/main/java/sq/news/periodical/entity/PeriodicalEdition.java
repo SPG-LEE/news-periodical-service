@@ -37,7 +37,7 @@ public class PeriodicalEdition extends BaseEntity {
 	@ApiModelProperty(value = "版次标题")
 	@JsonProperty
 	private String title;
-	@ApiModelProperty(value = "版次摘要")
+	@ApiModelProperty(value = "期刊Id")
 	@JsonProperty
 	private long periodicalId;
 	@ApiModelProperty(value = "作者名")

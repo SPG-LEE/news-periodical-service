@@ -1,5 +1,6 @@
 package sq.news.periodical.service;
 
+import java.util.Date;
 import java.util.List;
 
 import sq.base.ServiceResult;
@@ -11,5 +12,7 @@ public interface PeriodicalService {
 	void save(Periodical entity);
 	void update(Periodical entity);
 	void delete(long id);
+    Periodical findNewestPeriodical(Periodical indexPeriodical);
 
+	List<Periodical> findOldBefore(Date publishDate, int pageNumber, int pageSize);
 }

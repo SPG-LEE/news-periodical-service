@@ -12,4 +12,5 @@ public interface EditionService {
 	void update(PeriodicalEdition entity);
 	void delete(long id);
 
+    List<PeriodicalEdition> findByPeriodicalId(Long id);
 }

@@ -33,9 +33,9 @@ public class PeriodicalHibernateService implements PeriodicalService {
     public ServiceResult<List<Periodical>> findAll(int pageSize, int pageNum, String title) {
         Page<Periodical> result;
         if (!FormatUtil.isNullOrEmpty(title)) {
-            result = periodicalRepository.findByTitleLike(title, new PageRequest(pageNum, pageSize,new Sort(Sort.Direction.DESC,"updateDate")));
+            result = periodicalRepository.findByTitleLike(title, new PageRequest(pageNum, pageSize, new Sort(Sort.Direction.DESC, "updateDate")));
         } else {
-            result = periodicalRepository.findAll(new PageRequest(pageNum, pageSize,new Sort(Sort.Direction.DESC,"updateDate")));
+            result = periodicalRepository.findAll(new PageRequest(pageNum, pageSize, new Sort(Sort.Direction.DESC, "updateDate")));
         }
         return ServiceResultBuilder.buildSuccessMessageResult(result.getContent(), RestConstans.FIND_SUCCESS.getName(), result.getTotalElements());
     }
@@ -54,6 +54,23 @@ public class PeriodicalHibernateService implements PeriodicalService {
     @Override
     public void delete(long id) {
         periodicalRepository.deleteById(id);
+    }
+
+    @Override
+    public Periodical findNewestPeriodical(Periodical indexPeriodical) {
+        if (indexPeriodical != null) {
+            return indexPeriodical;
+        }
+        List<Periodical> findResult = periodicalRepository.findAll(new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate"))).getContent();
+        if (findResult.size() > 0) {
+            return findResult.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Periodical> findOldBefore(Date publishDate, int pageNumber, int pageSize) {
+        return periodicalRepository.findByPublishDateBefore(publishDate, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
     }
 
 }

@@ -7,8 +7,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sq.base.ServiceResult;
 import sq.constans.RestConstans;
+import sq.news.periodical.entity.HotZone;
 import sq.news.periodical.entity.PeriodicalEdition;
 import sq.news.periodical.respository.EditionRepository;
+import sq.news.periodical.respository.HotZoneRepository;
 import sq.news.periodical.service.EditionService;
 import sq.util.FormatUtil;
 import sq.util.ServiceResultBuilder;
@@ -20,6 +22,8 @@ import java.util.List;
 public class EditionHibernateService implements EditionService {
     @Autowired
     private EditionRepository editionRepository;
+    @Autowired
+    private HotZoneRepository hotZoneRepository;
 
     @Override
     public PeriodicalEdition findById(long id) {
@@ -54,6 +58,15 @@ public class EditionHibernateService implements EditionService {
     @Override
     public void delete(long id) {
         editionRepository.deleteById(id);
+    }
+
+    @Override
+    public List<PeriodicalEdition> findByPeriodicalId(Long id) {
+        List<PeriodicalEdition> result = editionRepository.findByPeriodicalId(id);
+        result.stream().forEach(edition->{
+            edition.setHotZones(hotZoneRepository.findByEditionId(edition.getId()));
+        });
+        return result;
     }
 
 }
