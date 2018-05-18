@@ -5,25 +5,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
+import sq.news.periodical.bean.PublishMessageBean;
 import sq.news.periodical.bean.weixin.DepartmentResponse;
 import sq.news.periodical.bean.weixin.UserResponse;
 import sq.news.periodical.entity.Department;
+import sq.news.periodical.entity.Periodical;
+import sq.news.periodical.entity.PeriodicalEdition;
 import sq.news.periodical.entity.User;
 import sq.news.periodical.respository.DepartmentRepository;
+import sq.news.periodical.respository.EditionRepository;
+import sq.news.periodical.respository.PeriodicalRepository;
 import sq.news.periodical.respository.UserRepository;
 import sq.news.periodical.service.JobService;
 import sq.news.periodical.util.QyWeixinUtil;
 import sq.util.JsonUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JobServiceImpl implements JobService {
 
+    private static String WEB_INDEX = "neikan.shengquan.com";
     @Autowired
     private DepartmentRepository departmentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PeriodicalRepository periodicalRepository;
+    @Autowired
+    private EditionRepository editionRepository;
     @Autowired
     private RedisTemplate redisTemplate;
     private final static String SYN_USER_CRON = "59 59 23 * * ?";
@@ -73,7 +84,7 @@ public class JobServiceImpl implements JobService {
         if (usersJson == null) {
             return;
         }
-        System.err.println("usersJson:"+usersJson);
+        System.err.println("usersJson:" + usersJson);
         UserResponse userResponse = JsonUtil.toObject(usersJson, UserResponse.class);
         if (userResponse.getUserlist() == null) {
             return;
@@ -95,5 +106,33 @@ public class JobServiceImpl implements JobService {
     public User getUserByAuthCode(String code) {
         String userIdJson = QyWeixinUtil.getUserIdByAuthCode(redisTemplate, code);
         return null;
+    }
+
+    @Override
+    public void sendMessage(PublishMessageBean publishMessageBean) {
+        String departmentId=null;
+        String userId=null;
+        StringBuffer departmentIds = new StringBuffer();
+        if (publishMessageBean.getDepartmentIds() != null) {
+            for (String departmentIdStr:publishMessageBean.getDepartmentIds()){
+                departmentIds.append(departmentIdStr);
+                departmentIds.append("|");
+            }
+            departmentIds.setLength(departmentIds.length() - 1);
+            departmentId = departmentIds.toString();
+         }else{
+            userId="@all";
+        }
+        Optional<Periodical> periodicalOptional = periodicalRepository.findById(publishMessageBean.getPeriodicalId());
+        if (periodicalOptional==null){
+            return;
+        }
+        Periodical periodical = periodicalOptional.get();
+        List<PeriodicalEdition> editions = editionRepository.findByPeriodicalId(publishMessageBean.getPeriodicalId());
+       String picUrl = null;
+        if (editions.size()>0){
+            picUrl = editions.get(0).getImage();
+        }
+        QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX,picUrl,periodical.getTitle(),periodical.getDescription(),departmentId,userId);
     }
 }

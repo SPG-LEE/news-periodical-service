@@ -12,6 +12,8 @@ import sq.util.HttpUtils;
 import sq.util.JsonUtil;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +28,8 @@ public class QyWeixinUtil {
     private static String GET_DEPARTMENTS_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/list";
     private static String GET_USER_FROM_ID_URL = "https://qyapi.weixin.qq.com/cgi-bin/user/get";
     private static String GET_USERID_FROM_CODE_URL = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo";
-    private static String POST_MESSAGE_URL = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=ACCESS_TOKEN";
+    private static String POST_MESSAGE_URL = "https://qyapi.weixin.qq.com/cgi-bin/message/send";
+    private static String GET_AUTHCODE_URL = "https://open.weixin.qq.com/connect/oauth2/authorize";
 
     public static String getToken(RedisTemplate redisTemplate) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
@@ -123,7 +126,13 @@ public class QyWeixinUtil {
         JSONObject article = new JSONObject();
         article.put("title", title);
         article.put("description", description);
-        article.put("url", url);
+        String redirectUrl = null;
+        try {
+            redirectUrl = GET_AUTHCODE_URL+"?appid="+CORPID+"&redirect_uri="+ URLEncoder.encode(url,"UTF-8")+"&response_type=code&scope=snsapi_base#wechat_redirect";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        article.put("url", redirectUrl);
         article.put("picurl", picurl);
         articles.add(article);
         news.put("articles", articles);

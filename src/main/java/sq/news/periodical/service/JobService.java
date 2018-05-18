@@ -2,6 +2,7 @@ package sq.news.periodical.service;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import sq.base.ServiceResult;
+import sq.news.periodical.bean.PublishMessageBean;
 import sq.news.periodical.entity.Article;
 import sq.news.periodical.entity.User;
 import sq.news.periodical.service.impl.JobServiceImpl;
@@ -13,4 +14,6 @@ public interface JobService {
     void synUserTest();
 
     User getUserByAuthCode(String code);
+
+    void sendMessage(PublishMessageBean publishMessageBean);
 }

@@ -6,13 +6,18 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import sq.base.AppResult;
+import sq.base.ServiceResult;
 import sq.bean.Admin;
 import sq.constans.RestConstans;
+import sq.news.periodical.entity.Department;
 import sq.news.periodical.entity.User;
 import sq.news.periodical.service.AdminRedisService;
+import sq.news.periodical.service.DepartmentService;
 import sq.news.periodical.service.JobService;
 import sq.news.periodical.util.QyWeixinUtil;
 import sq.util.AppResultBuilder;
+
+import java.util.List;
 
 
 @RestController
@@ -23,6 +28,8 @@ public class UserController {
 
     @Autowired
     private JobService jobService;
+    @Autowired
+    private DepartmentService departmentService;
     @GetMapping
     @ApiOperation(value = "根据用户code获取用户")
     @ApiIgnore
@@ -45,5 +52,21 @@ public class UserController {
         }
         jobService.synUser();
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+    }
+    @GetMapping("/departments")
+    @ApiOperation(value = "获取所有部门")
+    public AppResult<List<Department>> getDepartments(@RequestHeader("x-access-token") final
+                                        String token,@RequestParam(required = false,defaultValue = "0")int pageNum,@RequestParam(required = false,defaultValue = "20")int pageSize) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "job:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        ServiceResult<List<Department>> result = departmentService.findAll(pageSize, pageNum);
+        return AppResultBuilder.buildSuccessMessageResult(result.getData(),result.getMessage(),result.getTotal());
     }
 }
