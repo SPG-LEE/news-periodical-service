@@ -90,4 +90,10 @@ public class JobServiceImpl implements JobService {
             userRepository.save(needSaveUser);
         });
     }
+
+    @Override
+    public User getUserByAuthCode(String code) {
+        String userIdJson = QyWeixinUtil.getUserIdByAuthCode(redisTemplate, code);
+        return null;
+    }
 }

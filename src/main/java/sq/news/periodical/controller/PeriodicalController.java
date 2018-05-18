@@ -152,7 +152,7 @@ public class PeriodicalController {
     }
 
     @GetMapping("/web/oldList")
-    @ApiOperation(value = "web端首页最新期刊数据")
+    @ApiOperation(value = "web端首页往期期刊数据")
     public AppResult<List<Periodical>> findOldList(@RequestParam(required = false, defaultValue = "0") int pageNumber
             , @RequestParam(required = false, defaultValue = "10") int pageSize, @RequestParam(required = false) Long id) {
         Date publishDate = new Date();

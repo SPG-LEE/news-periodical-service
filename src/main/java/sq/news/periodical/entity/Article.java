@@ -124,7 +124,7 @@ public class Article extends BaseEntity {
 	public void setEditionId(long editionId) {
 		this.editionId = editionId;
 	}
-	@Column(columnDefinition="BLOB")
+	@Column(columnDefinition="TEXT")
 	public String getContent() {
 		return content;
 	}

@@ -95,7 +95,7 @@ public class EditionController {
     }
    
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "修改版次")
+    @ApiOperation(value = "删除版次")
     public AppResult<Void> update(@RequestHeader("x-access-token") final
                                         String token, @PathVariable long id) {
         AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);

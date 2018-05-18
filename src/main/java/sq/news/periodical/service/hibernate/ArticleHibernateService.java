@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import sq.base.ServiceResult;
 import sq.constans.RestConstans;
 import sq.news.periodical.entity.Article;
+import sq.news.periodical.entity.ArticleComment;
+import sq.news.periodical.respository.ArticleCommentRepository;
 import sq.news.periodical.respository.ArticleRepository;
 import sq.news.periodical.service.ArticleService;
 import sq.util.FormatUtil;
@@ -20,6 +22,8 @@ import java.util.List;
 public class ArticleHibernateService implements ArticleService {
     @Autowired
     private ArticleRepository articleRepository;
+    @Autowired
+    private ArticleCommentRepository articleCommentRepository;
 
     @Override
     public Article findById(long id) {
@@ -52,8 +56,18 @@ public class ArticleHibernateService implements ArticleService {
     }
 
     @Override
+    public List<ArticleComment> findComments(long articleId) {
+       return  articleCommentRepository.findByArticleIdAndAndHasShow(articleId,true);
+    }
+
+    @Override
     public void delete(long id) {
         articleRepository.deleteById(id);
+    }
+
+    @Override
+    public void saveComment(ArticleComment comment) {
+        articleCommentRepository.saveAndFlush(comment);
     }
 
 }
