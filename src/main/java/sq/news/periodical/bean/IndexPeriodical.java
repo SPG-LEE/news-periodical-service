@@ -1,4 +1,4 @@
-package sq.news.periodical.Bean;
+package sq.news.periodical.bean;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import sq.news.periodical.entity.Periodical;

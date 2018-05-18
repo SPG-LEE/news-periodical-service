@@ -61,9 +61,10 @@ public class PeriodicalHibernateService implements PeriodicalService {
         if (indexPeriodical != null) {
             return indexPeriodical;
         }
-        List<Periodical> findResult = periodicalRepository.findAll(new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate"))).getContent();
-        if (findResult.size() > 0) {
-            return findResult.get(0);
+        Page<Periodical> reslut = periodicalRepository.findAll(new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
+
+        if (reslut!=null && reslut.getContent().size() > 0) {
+            return reslut.getContent().get(0);
         }
         return null;
     }
