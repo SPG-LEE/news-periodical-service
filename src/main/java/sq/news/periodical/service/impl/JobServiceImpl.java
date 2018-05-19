@@ -105,6 +105,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public User getUserByAuthCode(String code) {
         String userIdResponse = QyWeixinUtil.getUserIdByAuthCode(redisTemplate, code);
+        System.err.println(userIdResponse);
         JSONObject userIdJson = JSONObject.parseObject(userIdResponse);
         String userId = userIdJson.getString("UserId");
         if (userId == null) {

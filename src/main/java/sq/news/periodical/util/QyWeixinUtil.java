@@ -102,7 +102,7 @@ public class QyWeixinUtil {
     }
 
     public static String getUserIdByAuthCode(RedisTemplate redisTemplate, String code) {
-        String token = getToken(redisTemplate);
+        String token = getToken(redisTemplate,TEST_CORPSECRET);
         Map<String, String> params = new HashMap<>();
         params.put("access_token", token);
         params.put("code", code);
