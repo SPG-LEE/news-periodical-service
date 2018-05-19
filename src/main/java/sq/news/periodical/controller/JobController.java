@@ -60,7 +60,7 @@ public class JobController {
         jobService.synUser();
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
     }
-    @GetMapping("/sendMessage")
+    @PostMapping("/sendMessage")
     @ApiOperation(value = "推送期刊")
     public AppResult<String> sendMessage(@RequestHeader("x-access-token") final
                                         String token,@RequestBody PublishMessageBean publishMessageBean) {
@@ -80,7 +80,7 @@ public class JobController {
        jobService.sendMessage(publishMessageBean);
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
     }
-    @GetMapping("/sendMessage/test")
+    @PostMapping("/sendMessage/test")
     @ApiOperation(value = "推送期刊")
     public AppResult<String> sendMessageTest(@RequestHeader("x-access-token") final
                                          String token,@RequestBody PublishMessageBean publishMessageBean) {
