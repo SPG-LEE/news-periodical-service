@@ -18,5 +18,11 @@ public interface PeriodicalRepository extends JpaRepository<Periodical, Long>,
 
 	Page<Periodical> findByTitleLike(String title, Pageable pageRequest);
 
-    List<Periodical> findByPublishDateBefore(Date publishDate, Pageable pageable);
+    Page<Periodical> findByHasShow(boolean hasShow, Pageable publishDate);
+
+    Periodical findByIdAndHasShowAndHasAudit(Long id, boolean hasShow, boolean b);
+
+    List<Periodical> findByPublishDateBeforeAndHasAudit(Date publishDate, boolean b, Pageable publishDate1);
+
+    List<Periodical> findByPublishDateBeforeAndHasShowAndHasAudit(boolean hasShow, Date publishDate, boolean b, Pageable publishDate1);
 }

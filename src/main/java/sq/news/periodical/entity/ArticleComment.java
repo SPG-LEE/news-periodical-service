@@ -34,10 +34,13 @@ public class ArticleComment extends BaseEntity {
 	@ApiModelProperty(value = "文章Id")
 	@JsonProperty
 	private long articleId;
-	@ApiModelProperty(value = "评论人信息")
+	@ApiModelProperty(value = "评论人名称")
 	@JsonProperty
-	private String userInfo;
-	@ApiModelProperty(value = "评论人信息")
+	private String userName;
+	@ApiModelProperty(value = "评论人头像")
+	@JsonProperty
+	private String avtar;
+	@ApiModelProperty(value = "评论人Id")
 	@JsonProperty
 	private String userId;
 	@ApiModelProperty(value = "评论内容")
@@ -55,12 +58,20 @@ public class ArticleComment extends BaseEntity {
 		this.articleId = articleId;
 	}
 
-	public String getUserInfo() {
-		return userInfo;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setUserInfo(String userInfo) {
-		this.userInfo = userInfo;
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getAvtar() {
+		return avtar;
+	}
+
+	public void setAvtar(String avtar) {
+		this.avtar = avtar;
 	}
 
 	public String getUserId() {

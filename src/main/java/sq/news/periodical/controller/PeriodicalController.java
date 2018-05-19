@@ -6,6 +6,8 @@ import sq.bean.Admin;
 import sq.constans.RestConstans;
 import sq.news.periodical.entity.Periodical;
 import sq.news.periodical.entity.PeriodicalEdition;
+import sq.news.periodical.entity.User;
+import sq.news.periodical.respository.UserRepository;
 import sq.news.periodical.service.AdminRedisService;
 import sq.news.periodical.service.EditionService;
 import sq.news.periodical.service.PeriodicalService;
@@ -26,6 +28,8 @@ public class PeriodicalController {
     private PeriodicalService periodicalService;
     @Autowired
     private EditionService editionService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AdminRedisService adminRedisService;
@@ -102,10 +106,11 @@ public class PeriodicalController {
         periodicalService.update(periodical);
         return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
     }
+
     @PutMapping("/show")
     @ApiOperation(value = "审核期刊")
     public AppResult<List<Periodical>> show(@RequestHeader("x-access-token") final
-                                               String token, @RequestBody List<Long> ids) {
+                                            String token, @RequestBody List<Long> ids) {
         AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
         if (!adminAppResult.isSuccess()) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
@@ -124,10 +129,11 @@ public class PeriodicalController {
         periodicalService.updateAll(needUpdate);
         return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
     }
+
     @PutMapping("/unShow")
     @ApiOperation(value = "审核期刊")
     public AppResult<List<Periodical>> unShow(@RequestHeader("x-access-token") final
-                                            String token, @RequestBody List<Long> ids) {
+                                              String token, @RequestBody List<Long> ids) {
         AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
         if (!adminAppResult.isSuccess()) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
@@ -146,6 +152,7 @@ public class PeriodicalController {
         periodicalService.updateAll(needUpdate);
         return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
     }
+
     @PutMapping("/approve")
     @ApiOperation(value = "审核期刊")
     public AppResult<List<Periodical>> approve(@RequestHeader("x-access-token") final
@@ -211,12 +218,20 @@ public class PeriodicalController {
 
     @GetMapping("/web/newest")
     @ApiOperation(value = "web端首页最新期刊数据")
-    public AppResult<Periodical> findNewPeriodical(@RequestParam(required = false) Long id) {
+    public AppResult<Periodical> findNewPeriodical(@RequestParam(required = false) Long id, @RequestParam String userId) {
         Periodical indexPeriodical = null;
+        List<User> findUsers = userRepository.findByUserId(userId);
+        boolean hasShow = true;
+        if (findUsers.size() == 0) {
+            return AppResultBuilder.buildFailedMessageResult("无权查看");
+        }
+        if (findUsers.get(0).getStatus() != 1) {
+            hasShow = false;
+        }
         if (id != null) {
             indexPeriodical = periodicalService.findById(id);
         }
-        Periodical result = periodicalService.findNewestPeriodical(indexPeriodical);
+        Periodical result = periodicalService.findNewestPeriodical(indexPeriodical, hasShow);
         joinEdition(result);
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
@@ -224,13 +239,24 @@ public class PeriodicalController {
     @GetMapping("/web/oldList")
     @ApiOperation(value = "web端首页往期期刊数据")
     public AppResult<List<Periodical>> findOldList(@RequestParam(required = false, defaultValue = "0") int pageNumber
-            , @RequestParam(required = false, defaultValue = "10") int pageSize, @RequestParam(required = false) Long id) {
+            , @RequestParam(required = false, defaultValue = "10") int pageSize, @RequestParam(required = false) Long id, @RequestParam String userId) {
         Date publishDate = new Date();
+        List<User> findUsers = userRepository.findByUserId(userId);
+        boolean hasShow = false;
+        if (findUsers.size() == 0) {
+            return AppResultBuilder.buildFailedMessageResult("无权查看");
+        }
         if (id != null) {
-            Periodical indexPeriodical = periodicalService.findById(id);
+            hasShow = (findUsers.get(0).getStatus() == 1);
+            Periodical indexPeriodical = periodicalService.findByIdAndHasShow(id, hasShow);
             publishDate = indexPeriodical.getPublishDate();
         }
-        List<Periodical> result = periodicalService.findOldBefore(publishDate, pageNumber, pageSize);
+        List<Periodical> result;
+        if (hasShow) {
+            result = periodicalService.findOldBefore(publishDate, pageNumber, pageSize);
+        } else {
+            result = periodicalService.findOldBeforeAndHasShow(publishDate, true, pageNumber, pageSize);
+        }
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
 

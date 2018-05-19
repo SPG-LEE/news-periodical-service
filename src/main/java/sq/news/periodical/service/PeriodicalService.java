@@ -13,7 +13,11 @@ public interface PeriodicalService {
 	void update(Periodical entity);
 	void updateAll(List<Periodical> entitys);
 	void delete(long id);
-    Periodical findNewestPeriodical(Periodical indexPeriodical);
+    Periodical findNewestPeriodical(Periodical indexPeriodical, boolean hasShow);
 
 	List<Periodical> findOldBefore(Date publishDate, int pageNumber, int pageSize);
+
+	Periodical findByIdAndHasShow(Long id, boolean hasShow);
+
+	List<Periodical> findOldBeforeAndHasShow(Date publishDate, boolean hasShow, int pageNumber, int pageSize);
 }

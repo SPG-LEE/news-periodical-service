@@ -30,6 +30,11 @@ public class PeriodicalHibernateService implements PeriodicalService {
     }
 
     @Override
+    public Periodical findByIdAndHasShow(Long id, boolean hasShow) {
+        return periodicalRepository.findByIdAndHasShowAndHasAudit(id, hasShow, true);
+    }
+
+    @Override
     public ServiceResult<List<Periodical>> findAll(int pageSize, int pageNum, String title) {
         Page<Periodical> result;
         if (!FormatUtil.isNullOrEmpty(title)) {
@@ -62,13 +67,13 @@ public class PeriodicalHibernateService implements PeriodicalService {
     }
 
     @Override
-    public Periodical findNewestPeriodical(Periodical indexPeriodical) {
-        if (indexPeriodical != null) {
+    public Periodical findNewestPeriodical(Periodical indexPeriodical, boolean hasShow) {
+        if (indexPeriodical != null && (indexPeriodical.isHasShow() || hasShow)) {
             return indexPeriodical;
         }
-        Page<Periodical> reslut = periodicalRepository.findAll(new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
+        Page<Periodical> reslut = periodicalRepository.findByHasShow(hasShow, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
 
-        if (reslut!=null && reslut.getContent().size() > 0) {
+        if (reslut != null && reslut.getContent().size() > 0) {
             return reslut.getContent().get(0);
         }
         return null;
@@ -76,7 +81,12 @@ public class PeriodicalHibernateService implements PeriodicalService {
 
     @Override
     public List<Periodical> findOldBefore(Date publishDate, int pageNumber, int pageSize) {
-        return periodicalRepository.findByPublishDateBefore(publishDate, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
+        return periodicalRepository.findByPublishDateBeforeAndHasAudit(publishDate, true, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
+    }
+
+    @Override
+    public List<Periodical> findOldBeforeAndHasShow(Date publishDate, boolean hasShow, int pageNumber, int pageSize) {
+        return periodicalRepository.findByPublishDateBeforeAndHasShowAndHasAudit(hasShow, publishDate, true, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
     }
 
 }

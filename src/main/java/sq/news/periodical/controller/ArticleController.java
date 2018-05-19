@@ -81,6 +81,9 @@ public class ArticleController {
             return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
         }
         Article result = articleService.findById(id);
+        if (result == null){
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.FIND_FAILED.getName());
+        }
         result.setComments(articleService.findComments(id));
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
@@ -92,7 +95,8 @@ public class ArticleController {
         if (!FormatUtil.isNullOrEmpty(comment.getUserId())) {
             List<User> findUsers = userRepository.findByUserId(comment.getUserId());
             if (findUsers.size() > 0) {
-                comment.setUserInfo(JsonUtil.toJson(findUsers.get(0)));
+                comment.setAvtar(findUsers.get(0).getAvatar());
+                comment.setUserName(findUsers.get(0).getName());
                 articleService.saveComment(comment);
                 return AppResultBuilder.buildSuccessMessageResult(RestConstans.DISCUSS_SUCCESS.getName());
             }
