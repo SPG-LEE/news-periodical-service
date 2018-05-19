@@ -4,7 +4,16 @@ import java.util.List;
 
 public class PublishMessageBean {
     private List<String> departmentIds;
+    private List<String> userIds;
     private long periodicalId;
+
+    public List<String> getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(List<String> userIds) {
+        this.userIds = userIds;
+    }
 
     public List<String> getDepartmentIds() {
         return departmentIds;

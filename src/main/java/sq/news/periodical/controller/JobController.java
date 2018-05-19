@@ -80,5 +80,24 @@ public class JobController {
        jobService.sendMessage(publishMessageBean);
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
     }
+    @GetMapping("/sendMessage/test")
+    @ApiOperation(value = "推送期刊")
+    public AppResult<String> sendMessageTest(@RequestHeader("x-access-token") final
+                                         String token,@RequestBody PublishMessageBean publishMessageBean) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "job:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
+        }
+        List<String> departmentIdList = publishMessageBean.getDepartmentIds();
+        if (departmentIdList.size()==0){
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.PARAM_INVALID.getName());
+        }
+        jobService.sendMessage(publishMessageBean);
+        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+    }
 }

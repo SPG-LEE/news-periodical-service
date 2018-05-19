@@ -122,6 +122,7 @@ public class JobServiceImpl implements JobService {
         String departmentId = null;
         String userId = null;
         StringBuffer departmentIds = new StringBuffer();
+        StringBuffer userIds = new StringBuffer();
         if (publishMessageBean.getDepartmentIds() != null) {
             for (String departmentIdStr : publishMessageBean.getDepartmentIds()) {
                 departmentIds.append(departmentIdStr);
@@ -129,8 +130,15 @@ public class JobServiceImpl implements JobService {
             }
             departmentIds.setLength(departmentIds.length() - 1);
             departmentId = departmentIds.toString();
-        } else {
-            userId = "@all";
+        } else if(publishMessageBean.getUserIds()!=null) {
+            for (String userIdStr : publishMessageBean.getUserIds()) {
+                userIds.append(userIdStr);
+                userIds.append("|");
+            }
+            userIds.setLength(userIds.length() - 1);
+            userId = userIds.toString();
+        }else{
+                userId = "@all";
         }
         Optional<Periodical> periodicalOptional = periodicalRepository.findById(publishMessageBean.getPeriodicalId());
         if (periodicalOptional == null) {

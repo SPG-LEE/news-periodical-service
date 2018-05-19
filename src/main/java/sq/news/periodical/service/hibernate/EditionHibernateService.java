@@ -47,6 +47,12 @@ public class EditionHibernateService implements EditionService {
     @Override
     public void save(PeriodicalEdition entity) {
         editionRepository.saveAndFlush(entity);
+        if (entity.getHotZones().size()>0){
+            entity.getHotZones().stream().forEach(hotZone->{
+                hotZone.setEditionId(entity.getId());
+            });
+            hotZoneRepository.saveAll(entity.getHotZones());
+        }
     }
 
     @Override
