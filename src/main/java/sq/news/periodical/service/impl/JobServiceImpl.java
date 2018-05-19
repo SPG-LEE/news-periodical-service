@@ -26,7 +26,7 @@ import java.util.Optional;
 @Repository
 public class JobServiceImpl implements JobService {
 
-    private static String WEB_INDEX = "http%3a%2f%2fneikan.shengquan.com%2ftest%2fniekan519%2findex.html";
+    private static String WEB_INDEX = "http%3a%2f%2fneikan.shengquan.com%2fniekan519%2fhome.html";
     @Autowired
     private DepartmentRepository departmentRepository;
     @Autowired
