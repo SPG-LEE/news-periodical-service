@@ -30,7 +30,6 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "期刊")
 @Entity
 @Table(name = "periodicals")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @DynamicInsert
 @DynamicUpdate
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
