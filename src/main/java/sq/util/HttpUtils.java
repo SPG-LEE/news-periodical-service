@@ -147,7 +147,7 @@ public class HttpUtils {
 		Request request = new Request.Builder().url(url).headers(headerMap)
 				.post(requestBody).build();
 		Response response = client.newCall(request).execute();
-		return response.body().toString();
+		return response.body().string();
 	}
 
 	public static String postMethod(String url, Map<String, String> headers,

@@ -31,15 +31,15 @@ public class QyWeixinUtil {
     private static String POST_MESSAGE_URL = "https://qyapi.weixin.qq.com/cgi-bin/message/send";
     private static String GET_AUTHCODE_URL = "https://open.weixin.qq.com/connect/oauth2/authorize";
 
-    public static String getToken(RedisTemplate redisTemplate) {
+    public static String getToken(RedisTemplate redisTemplate, String secret) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        String redisToken = ops.get(PROD_CORPSECRET);
+        String redisToken = ops.get(secret);
         if (redisToken != null) {
             return redisToken;
         }
         Map<String, String> params = new HashMap<>();
         params.put("corpid", CORPID);
-        params.put("corpsecret", PROD_CORPSECRET);
+        params.put("corpsecret", secret);
         try {
             String responseBody = HttpUtils.httpGetMethod(GET_TOKEN_URL, params);
             if (responseBody != null) {
@@ -50,11 +50,15 @@ public class QyWeixinUtil {
             e.printStackTrace();
         }
         if (redisToken != null) {
-            ops.set(PROD_CORPSECRET, redisToken);
-            redisTemplate.expire(PROD_CORPSECRET, 7000, TimeUnit.SECONDS);
+            ops.set(secret, redisToken);
+            redisTemplate.expire(secret, 7000, TimeUnit.SECONDS);
             return redisToken;
         }
         return null;
+    }
+
+    public static String getToken(RedisTemplate redisTemplate) {
+        return getToken(redisTemplate, PROD_CORPSECRET);
     }
 
     public static String getDepartments(RedisTemplate redisTemplate) {
@@ -111,7 +115,7 @@ public class QyWeixinUtil {
     }
 
     public static String sendMessage(RedisTemplate redisTemplate, String url, String picurl, String title, String description, String departmentId, String userId) {
-        String token = getToken(redisTemplate);
+        String token = getToken(redisTemplate,TEST_CORPSECRET);
         JSONObject params = new JSONObject();
         if (userId != null) {
             params.put("touser", userId);
@@ -128,7 +132,7 @@ public class QyWeixinUtil {
         article.put("description", description);
         String redirectUrl = null;
         try {
-            redirectUrl = GET_AUTHCODE_URL+"?appid="+CORPID+"&redirect_uri="+ URLEncoder.encode(url,"UTF-8")+"&response_type=code&scope=snsapi_base#wechat_redirect";
+            redirectUrl = GET_AUTHCODE_URL + "?appid=" + CORPID + "&redirect_uri=" + URLEncoder.encode(url, "UTF-8") + "&response_type=code&scope=snsapi_base#wechat_redirect";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
