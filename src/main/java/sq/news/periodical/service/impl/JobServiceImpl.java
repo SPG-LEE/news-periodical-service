@@ -26,7 +26,7 @@ import java.util.Optional;
 @Repository
 public class JobServiceImpl implements JobService {
 
-    private static String WEB_INDEX = "neikan.shengquan.com";
+    private static String WEB_INDEX = "http%3a%2f%2fneikan.shengquan.com%2ftest%2fniekan519%2findex.html";
     @Autowired
     private DepartmentRepository departmentRepository;
     @Autowired
@@ -118,7 +118,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public void sendMessage(PublishMessageBean publishMessageBean) {
+    public String sendMessage(PublishMessageBean publishMessageBean) {
         String departmentId = null;
         String userId = null;
         StringBuffer departmentIds = new StringBuffer();
@@ -142,7 +142,7 @@ public class JobServiceImpl implements JobService {
         }
         Optional<Periodical> periodicalOptional = periodicalRepository.findById(publishMessageBean.getPeriodicalId());
         if (periodicalOptional == null) {
-            return;
+            return "期刊不存在";
         }
         Periodical periodical = periodicalOptional.get();
         List<PeriodicalEdition> editions = editionRepository.findByPeriodicalId(publishMessageBean.getPeriodicalId());
@@ -150,6 +150,6 @@ public class JobServiceImpl implements JobService {
         if (editions.size() > 0) {
             picUrl = editions.get(0).getImage();
         }
-        QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getTitle(), periodical.getDescription(), departmentId, userId);
+      return  QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getTitle(), periodical.getDescription(), departmentId, userId);
     }
 }

@@ -74,8 +74,8 @@ public class JobController {
 
         }
         List<String> departmentIdList = publishMessageBean.getDepartmentIds();
-       jobService.sendMessage(publishMessageBean);
-        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+        String message = jobService.sendMessage(publishMessageBean);
+        return AppResultBuilder.buildSuccessMessageResult(message,RestConstans.FIND_SUCCESS.getName());
     }
     @PostMapping("/sendMessage/test")
     @ApiOperation(value = "推送期刊")
@@ -90,8 +90,7 @@ public class JobController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
-        List<String> departmentIdList = publishMessageBean.getDepartmentIds();
-        jobService.sendMessage(publishMessageBean);
-        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+        String message = jobService.sendMessage(publishMessageBean);
+        return AppResultBuilder.buildSuccessMessageResult(message,RestConstans.FIND_SUCCESS.getName());
     }
 }
