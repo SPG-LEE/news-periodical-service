@@ -48,7 +48,7 @@ public class ArticleComment extends BaseEntity {
 	private String comment;
 	@ApiModelProperty(value = "是否展示")
 	@JsonProperty
-	private boolean hasShow;
+	private boolean hasShow = true;
 
 	public long getArticleId() {
 		return articleId;

@@ -40,6 +40,9 @@ public class PeriodicalEdition extends BaseEntity {
 	@ApiModelProperty(value = "期刊Id")
 	@JsonProperty
 	private long periodicalId;
+	@ApiModelProperty(value = "期刊名称")
+	@JsonProperty
+	private String periodicalName;
 	@ApiModelProperty(value = "作者名")
 	@JsonProperty
 	private String author;
@@ -63,6 +66,14 @@ public class PeriodicalEdition extends BaseEntity {
 	@ApiModelProperty(value = "阅读数量")
 	@JsonProperty
 	private List<HotZone> hotZones = new ArrayList<>();
+
+	public String getPeriodicalName() {
+		return periodicalName;
+	}
+
+	public void setPeriodicalName(String periodicalName) {
+		this.periodicalName = periodicalName;
+	}
 
 	public String getTitle() {
 		return title;
