@@ -86,7 +86,7 @@ public class PeriodicalHibernateService implements PeriodicalService {
 
     @Override
     public List<Periodical> findOldBeforeAndHasShow(Date publishDate, boolean hasShow, int pageNumber, int pageSize) {
-        return periodicalRepository.findByPublishDateBeforeAndHasShowAndHasAudit(hasShow, publishDate, true, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
+        return periodicalRepository.findByPublishDateBeforeAndHasShowAndHasAudit(publishDate,hasShow,  true, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
     }
 
 }

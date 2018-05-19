@@ -24,5 +24,5 @@ public interface PeriodicalRepository extends JpaRepository<Periodical, Long>,
 
     List<Periodical> findByPublishDateBeforeAndHasAudit(Date publishDate, boolean b, Pageable publishDate1);
 
-    List<Periodical> findByPublishDateBeforeAndHasShowAndHasAudit(boolean hasShow, Date publishDate, boolean b, Pageable publishDate1);
+    List<Periodical> findByPublishDateBeforeAndHasShowAndHasAudit(Date publishDate,boolean hasShow,  boolean b, Pageable publishDate1);
 }
