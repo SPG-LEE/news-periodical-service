@@ -27,16 +27,16 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public Article findById(long id) {
-        return articleRepository.findByIdAndHasAudit(id,true);
+        return articleRepository.findByIdAndHasAudit(id, true);
     }
 
     @Override
     public ServiceResult<List<Article>> findAll(int pageSize, int pageNum, String title) {
         Page<Article> result;
         if (!FormatUtil.isNullOrEmpty(title)) {
-            result = articleRepository.findByTitleLike(title, new PageRequest(pageNum, pageSize,new Sort(Sort.Direction.DESC,"updateDate")));
+            result = articleRepository.findByTitleLike(title, new PageRequest(pageNum, pageSize, new Sort(Sort.Direction.DESC, "updateDate")));
         } else {
-            result = articleRepository.findAll(new PageRequest(pageNum, pageSize,new Sort(Sort.Direction.DESC,"updateDate")));
+            result = articleRepository.findAll(new PageRequest(pageNum, pageSize, new Sort(Sort.Direction.DESC, "updateDate")));
         }
         return ServiceResultBuilder.buildSuccessMessageResult(result.getContent(), RestConstans.FIND_SUCCESS.getName(), result.getTotalElements());
     }
@@ -54,12 +54,12 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public List<ArticleComment> findComments(long articleId) {
-       return  articleCommentRepository.findByArticleIdAndAndHasShow(articleId,true);
+        return articleCommentRepository.findByArticleIdAndAndHasShow(articleId, true);
     }
 
     @Override
     public void delete(long id) {
-        articleRepository.deleteById(id);
+        articleRepository.delete(articleRepository.findById(id).get());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public Article findByIdAndHasShow(long id) {
-        return articleRepository.findByIdAndHasShowAndHasAudit(id,true,true);
+        return articleRepository.findByIdAndHasShowAndHasAudit(id, true, true);
     }
 
 }

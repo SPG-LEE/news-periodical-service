@@ -63,7 +63,7 @@ public class PeriodicalHibernateService implements PeriodicalService {
 
     @Override
     public void delete(long id) {
-        periodicalRepository.deleteById(id);
+        periodicalRepository.delete(periodicalRepository.findById(id).get());
     }
 
     @Override

@@ -69,7 +69,7 @@ public class EditionHibernateService implements EditionService {
 
     @Override
     public void delete(long id) {
-        editionRepository.deleteById(id);
+        editionRepository.delete(editionRepository.findById(id).get());
     }
 
     @Override
