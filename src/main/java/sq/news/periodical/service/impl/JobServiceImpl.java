@@ -104,35 +104,44 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public User getUserByAuthCode(String code) {
-        String userIdJson = QyWeixinUtil.getUserIdByAuthCode(redisTemplate, code);
+        String userIdResponse = QyWeixinUtil.getUserIdByAuthCode(redisTemplate, code);
+        JSONObject userIdJson = JSONObject.parseObject(userIdResponse);
+        String userId = userIdJson.getString("UserId");
+        if (userId == null) {
+            userId = userIdJson.getString("OpenId");
+        }
+        List<User> findUsers = userRepository.findByUserId(userId);
+        if (findUsers.size()>0){
+            return findUsers.get(0);
+        }
         return null;
     }
 
     @Override
     public void sendMessage(PublishMessageBean publishMessageBean) {
-        String departmentId=null;
-        String userId=null;
+        String departmentId = null;
+        String userId = null;
         StringBuffer departmentIds = new StringBuffer();
         if (publishMessageBean.getDepartmentIds() != null) {
-            for (String departmentIdStr:publishMessageBean.getDepartmentIds()){
+            for (String departmentIdStr : publishMessageBean.getDepartmentIds()) {
                 departmentIds.append(departmentIdStr);
                 departmentIds.append("|");
             }
             departmentIds.setLength(departmentIds.length() - 1);
             departmentId = departmentIds.toString();
-         }else{
-            userId="@all";
+        } else {
+            userId = "@all";
         }
         Optional<Periodical> periodicalOptional = periodicalRepository.findById(publishMessageBean.getPeriodicalId());
-        if (periodicalOptional==null){
+        if (periodicalOptional == null) {
             return;
         }
         Periodical periodical = periodicalOptional.get();
         List<PeriodicalEdition> editions = editionRepository.findByPeriodicalId(publishMessageBean.getPeriodicalId());
-       String picUrl = null;
-        if (editions.size()>0){
+        String picUrl = null;
+        if (editions.size() > 0) {
             picUrl = editions.get(0).getImage();
         }
-        QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX,picUrl,periodical.getTitle(),periodical.getDescription(),departmentId,userId);
+        QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getTitle(), periodical.getDescription(), departmentId, userId);
     }
 }

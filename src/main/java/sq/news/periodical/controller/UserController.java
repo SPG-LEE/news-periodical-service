@@ -32,7 +32,7 @@ public class UserController {
     private DepartmentService departmentService;
     @GetMapping
     @ApiOperation(value = "根据用户code获取用户")
-    @ApiIgnore
+//    @ApiIgnore
     public AppResult<User> getUser(@RequestParam String code) {
         User result= jobService.getUserByAuthCode(code);
         return AppResultBuilder.buildSuccessMessageResult(result,RestConstans.FIND_SUCCESS.getName());
