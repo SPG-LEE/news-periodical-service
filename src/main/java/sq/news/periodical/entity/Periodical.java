@@ -52,7 +52,7 @@ public class Periodical extends BaseEntity {
 	private long authorId;
 	@ApiModelProperty(value = "发布日期")
 	@JsonProperty
-	private Date publishDate;
+	private Date publishDate = new Date();
 	@ApiModelProperty(value = "是否阅读")
 	@JsonProperty
 	private boolean hasRead;
