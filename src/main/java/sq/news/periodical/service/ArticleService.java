@@ -14,4 +14,8 @@ public interface ArticleService {
 	List<ArticleComment> findComments(long articleId);
 	void delete(long id);
 	void saveComment(ArticleComment comment);
+
+    void updateAll(List<Article> needUpdate);
+
+	Article findByIdAndHasShow(long id);
 }

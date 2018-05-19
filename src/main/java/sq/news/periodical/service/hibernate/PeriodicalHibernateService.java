@@ -52,6 +52,11 @@ public class PeriodicalHibernateService implements PeriodicalService {
     }
 
     @Override
+    public void updateAll(List<Periodical> entitys) {
+        periodicalRepository.saveAll(entitys);
+    }
+
+    @Override
     public void delete(long id) {
         periodicalRepository.deleteById(id);
     }

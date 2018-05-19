@@ -9,10 +9,15 @@ import sq.bean.Admin;
 import sq.constans.RestConstans;
 import sq.news.periodical.entity.Article;
 import sq.news.periodical.entity.ArticleComment;
+import sq.news.periodical.entity.User;
+import sq.news.periodical.respository.UserRepository;
 import sq.news.periodical.service.AdminRedisService;
 import sq.news.periodical.service.ArticleService;
 import sq.util.AppResultBuilder;
+import sq.util.FormatUtil;
+import sq.util.JsonUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,6 +29,9 @@ public class ArticleController {
 
     @Autowired
     private AdminRedisService adminRedisService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     @ApiOperation(value = "获取文章列表")
@@ -63,18 +71,35 @@ public class ArticleController {
 
     @GetMapping("/web/{id}")
     @ApiOperation(value = "获取文章详情")
-    public AppResult<Article> findById(@PathVariable long id) {
+    public AppResult<Article> findById(@PathVariable long id, @RequestParam String userId) {
+        List<User> findUsers = userRepository.findByUserId(userId);
+        if (findUsers.size() == 0) {
+            return AppResultBuilder.buildFailedMessageResult("无权查看");
+        }
+        if (findUsers.get(0).getStatus() != 1) {
+            Article result = articleService.findByIdAndHasShow(id);
+            return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
+        }
         Article result = articleService.findById(id);
         result.setComments(articleService.findComments(id));
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
+
     @PostMapping("/web/{id}/comment")
     @ApiOperation(value = "评论")
     public AppResult<String> saveComment(@PathVariable long id, @RequestBody ArticleComment comment) {
         comment.setArticleId(id);
-        articleService.saveComment(comment);
-        return AppResultBuilder.buildSuccessMessageResult(RestConstans.DISCUSS_SUCCESS.getName());
+        if (!FormatUtil.isNullOrEmpty(comment.getUserId())) {
+            List<User> findUsers = userRepository.findByUserId(comment.getUserId());
+            if (findUsers.size() > 0) {
+                comment.setUserInfo(JsonUtil.toJson(findUsers.get(0)));
+                articleService.saveComment(comment);
+                return AppResultBuilder.buildSuccessMessageResult(RestConstans.DISCUSS_SUCCESS.getName());
+            }
+        }
+        return AppResultBuilder.buildFailedMessageResult(RestConstans.DISCUSS_FAILED.getName());
     }
+
     @PostMapping
     @ApiOperation(value = "保存文章")
     public AppResult<Article> save(@RequestHeader("x-access-token") final
@@ -110,6 +135,98 @@ public class ArticleController {
         }
         articleService.update(periodical);
         return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
+    }
+
+    @PutMapping("/show")
+    @ApiOperation(value = "显示文章")
+    public AppResult<List<Article>> show(@RequestHeader("x-access-token") final
+                                         String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Article> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Article article = articleService.findById(id);
+            article.setHasShow(true);
+            needUpdate.add(article);
+        }
+        articleService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
+    }
+
+    @PutMapping("/unShow")
+    @ApiOperation(value = "取消显示文章")
+    public AppResult<List<Article>> unShow(@RequestHeader("x-access-token") final
+                                           String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Article> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Article article = articleService.findById(id);
+            article.setHasShow(false);
+            needUpdate.add(article);
+        }
+        articleService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
+    }
+
+    @PutMapping("/unApprove")
+    @ApiOperation(value = "反审核文章")
+    public AppResult<List<Article>> unApprove(@RequestHeader("x-access-token") final
+                                              String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Article> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Article article = articleService.findById(id);
+            article.setHasAudit(false);
+            needUpdate.add(article);
+        }
+        articleService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
+    }
+
+    @PutMapping("/approve")
+    @ApiOperation(value = "审核文章")
+    public AppResult<List<Article>> approve(@RequestHeader("x-access-token") final
+                                            String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Article> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Article article = articleService.findById(id);
+            article.setHasAudit(true);
+            needUpdate.add(article);
+        }
+        articleService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
     }
 
     @DeleteMapping("/{id}")

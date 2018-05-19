@@ -9,4 +9,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long>,
 		ArticleCustomRepository {
 
 	Page<Article> findByTitleLike(String title, Pageable pageRequest);
+
+    Article findByIdAndHasShowAndHasAudit(long id, boolean b, boolean b1);
+
+	Article findByIdAndHasAudit(long id, boolean b);
 }

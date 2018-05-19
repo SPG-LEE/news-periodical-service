@@ -27,10 +27,7 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public Article findById(long id) {
-        if (articleRepository.findById(id).isPresent()) {
-            return articleRepository.findById(id).get();
-        }
-        return null;
+        return articleRepository.findByIdAndHasAudit(id,true);
     }
 
     @Override
@@ -68,6 +65,16 @@ public class ArticleHibernateService implements ArticleService {
     @Override
     public void saveComment(ArticleComment comment) {
         articleCommentRepository.saveAndFlush(comment);
+    }
+
+    @Override
+    public void updateAll(List<Article> needUpdate) {
+        articleRepository.saveAll(needUpdate);
+    }
+
+    @Override
+    public Article findByIdAndHasShow(long id) {
+        return articleRepository.findByIdAndHasShowAndHasAudit(id,true,true);
     }
 
 }

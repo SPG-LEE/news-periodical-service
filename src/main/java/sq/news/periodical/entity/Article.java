@@ -67,7 +67,29 @@ public class Article extends BaseEntity {
 	private String mainImage;
 	@ApiModelProperty(value = "是否审核")
 	@JsonProperty
+	private boolean hasAudit;
+	@ApiModelProperty(value = "是否显示")
+	@JsonProperty
+	private boolean hasShow;
+	@ApiModelProperty(value = "评论")
+	@JsonProperty
 	private List<ArticleComment> comments = new ArrayList<>();
+
+	public boolean isHasAudit() {
+		return hasAudit;
+	}
+
+	public void setHasAudit(boolean hasAudit) {
+		this.hasAudit = hasAudit;
+	}
+
+	public boolean isHasShow() {
+		return hasShow;
+	}
+
+	public void setHasShow(boolean hasShow) {
+		this.hasShow = hasShow;
+	}
 
 	public String getTitle() {
 		return title;

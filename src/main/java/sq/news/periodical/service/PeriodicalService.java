@@ -11,6 +11,7 @@ public interface PeriodicalService {
 	ServiceResult<List<Periodical>> findAll(int pageSize, int pageNum, String title);
 	void save(Periodical entity);
 	void update(Periodical entity);
+	void updateAll(List<Periodical> entitys);
 	void delete(long id);
     Periodical findNewestPeriodical(Periodical indexPeriodical);
 

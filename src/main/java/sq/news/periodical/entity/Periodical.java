@@ -53,15 +53,12 @@ public class Periodical extends BaseEntity {
 	@ApiModelProperty(value = "发布日期")
 	@JsonProperty
 	private Date publishDate = new Date();
-	@ApiModelProperty(value = "是否阅读")
+	@ApiModelProperty(value = "是否展示")
 	@JsonProperty
-	private boolean hasRead;
+	private boolean hasShow;
 	@ApiModelProperty(value = "是否发布")
 	@JsonProperty
-	private boolean hasPublish;
-	@ApiModelProperty(value = "是否分享")
-	@JsonProperty
-	private boolean hasShare;
+	private boolean hasPublish = true;
 	@ApiModelProperty(value = "是否审核")
 	@JsonProperty
 	private boolean hasAudit;
@@ -120,13 +117,6 @@ public class Periodical extends BaseEntity {
 		this.publishDate = publishDate;
 	}
 
-	public boolean isHasRead() {
-		return hasRead;
-	}
-
-	public void setHasRead(boolean hasRead) {
-		this.hasRead = hasRead;
-	}
 
 	public boolean isHasPublish() {
 		return hasPublish;
@@ -136,13 +126,6 @@ public class Periodical extends BaseEntity {
 		this.hasPublish = hasPublish;
 	}
 
-	public boolean isHasShare() {
-		return hasShare;
-	}
-
-	public void setHasShare(boolean hasShare) {
-		this.hasShare = hasShare;
-	}
 
 	public boolean isHasAudit() {
 		return hasAudit;
@@ -159,5 +142,13 @@ public class Periodical extends BaseEntity {
 
 	public void setEditions(List<PeriodicalEdition> editions) {
 		this.editions = editions;
+	}
+
+	public boolean isHasShow() {
+		return hasShow;
+	}
+
+	public void setHasShow(boolean hasShow) {
+		this.hasShow = hasShow;
 	}
 }

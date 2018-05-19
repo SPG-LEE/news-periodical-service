@@ -102,11 +102,10 @@ public class PeriodicalController {
         periodicalService.update(periodical);
         return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
     }
-
-    @PutMapping("/{id}/approve")
+    @PutMapping("/show")
     @ApiOperation(value = "审核期刊")
-    public AppResult<Periodical> approve(@RequestHeader("x-access-token") final
-                                         String token, @PathVariable long id) {
+    public AppResult<List<Periodical>> show(@RequestHeader("x-access-token") final
+                                               String token, @RequestBody List<Long> ids) {
         AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
         if (!adminAppResult.isSuccess()) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
@@ -116,10 +115,81 @@ public class PeriodicalController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
-        Periodical periodical = periodicalService.findById(id);
-        periodical.setHasAudit(true);
-        periodicalService.update(periodical);
-        return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
+        List<Periodical> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Periodical periodical = periodicalService.findById(id);
+            periodical.setHasShow(true);
+            needUpdate.add(periodical);
+        }
+        periodicalService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
+    }
+    @PutMapping("/unShow")
+    @ApiOperation(value = "审核期刊")
+    public AppResult<List<Periodical>> unShow(@RequestHeader("x-access-token") final
+                                            String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "periodical:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Periodical> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Periodical periodical = periodicalService.findById(id);
+            periodical.setHasShow(false);
+            needUpdate.add(periodical);
+        }
+        periodicalService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
+    }
+    @PutMapping("/approve")
+    @ApiOperation(value = "审核期刊")
+    public AppResult<List<Periodical>> approve(@RequestHeader("x-access-token") final
+                                               String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "periodical:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Periodical> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Periodical periodical = periodicalService.findById(id);
+            periodical.setHasAudit(true);
+            needUpdate.add(periodical);
+        }
+        periodicalService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
+    }
+
+    @PutMapping("/unApprove")
+    @ApiOperation(value = "反审核期刊")
+    public AppResult<List<Periodical>> unAapprove(@RequestHeader("x-access-token") final
+                                                  String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "periodical:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<Periodical> needUpdate = new ArrayList<>();
+        for (long id : ids) {
+            Periodical periodical = periodicalService.findById(id);
+            periodical.setHasAudit(false);
+            needUpdate.add(periodical);
+        }
+        periodicalService.updateAll(needUpdate);
+        return AppResultBuilder.buildSuccessMessageResult(needUpdate, RestConstans.FIND_SUCCESS.getName());
     }
 
     @DeleteMapping("/{id}")
@@ -160,7 +230,7 @@ public class PeriodicalController {
             Periodical indexPeriodical = periodicalService.findById(id);
             publishDate = indexPeriodical.getPublishDate();
         }
-        List<Periodical> result = periodicalService.findOldBefore(publishDate,pageNumber,pageSize);
+        List<Periodical> result = periodicalService.findOldBefore(publishDate, pageNumber, pageSize);
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
 
