@@ -74,9 +74,6 @@ public class JobController {
 
         }
         List<String> departmentIdList = publishMessageBean.getDepartmentIds();
-        if (departmentIdList==null){
-            return AppResultBuilder.buildFailedMessageResult(RestConstans.PARAM_INVALID.getName());
-        }
        jobService.sendMessage(publishMessageBean);
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
     }
@@ -94,9 +91,6 @@ public class JobController {
 
         }
         List<String> departmentIdList = publishMessageBean.getDepartmentIds();
-        if (departmentIdList==null){
-            return AppResultBuilder.buildFailedMessageResult(RestConstans.PARAM_INVALID.getName());
-        }
         jobService.sendMessage(publishMessageBean);
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
     }
