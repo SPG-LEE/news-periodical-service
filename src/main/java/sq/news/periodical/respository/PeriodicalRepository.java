@@ -14,17 +14,19 @@ import sq.enumeration.EntityStatus;
 import sq.news.periodical.entity.Periodical;
 
 public interface PeriodicalRepository extends JpaRepository<Periodical, Long>,
-		PeriodicalCustomRepository {
+        PeriodicalCustomRepository {
 
-	Page<Periodical> findByTitleLike(String title, Pageable pageRequest);
+    Page<Periodical> findByTitleLike(String title, Pageable pageRequest);
 
-    Page<Periodical> findByHasShowAndHasAudit(boolean hasShow,boolean hasAudit, Pageable publishDate);
+    Page<Periodical> findByHasShowAndHasAudit(boolean hasShow, boolean hasAudit, Pageable publishDate);
+
+    Page<Periodical> findByHasAudit(boolean b, Pageable publishDate);
 
     Periodical findByIdAndHasShowAndHasAudit(Long id, boolean hasShow, boolean b);
 
     List<Periodical> findByPublishDateBeforeAndHasAudit(Date publishDate, boolean b, Pageable publishDate1);
 
-    List<Periodical> findByPublishDateBeforeAndHasShowAndHasAudit(Date publishDate,boolean hasShow,  boolean b, Pageable publishDate1);
+    List<Periodical> findByPublishDateBeforeAndHasShowAndHasAudit(Date publishDate, boolean hasShow, boolean b, Pageable publishDate1);
 
-    Periodical findByIdAndHasAudit(long id,boolean hasAudit);
+    Periodical findByIdAndHasAudit(long id, boolean hasAudit);
 }

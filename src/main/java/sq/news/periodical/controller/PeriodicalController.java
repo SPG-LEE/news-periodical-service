@@ -236,6 +236,9 @@ public class PeriodicalController {
             indexPeriodical = periodicalService.findByIdHasAudit(id);
         }
         Periodical result = periodicalService.findNewestPeriodical(indexPeriodical, hasShow);
+        if(result==null){
+            return AppResultBuilder.buildFailedMessageResult("暂无最新期刊");
+        }
         joinEdition(result);
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }

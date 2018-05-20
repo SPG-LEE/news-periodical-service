@@ -28,10 +28,12 @@ public class PeriodicalHibernateService implements PeriodicalService {
         }
         return null;
     }
+
     @Override
     public Periodical findByIdHasAudit(long id) {
-        return periodicalRepository.findByIdAndHasAudit(id,true);
+        return periodicalRepository.findByIdAndHasAudit(id, true);
     }
+
     @Override
     public Periodical findByIdAndHasShow(Long id, boolean hasShow) {
         return periodicalRepository.findByIdAndHasShowAndHasAudit(id, hasShow, true);
@@ -71,11 +73,15 @@ public class PeriodicalHibernateService implements PeriodicalService {
 
     @Override
     public Periodical findNewestPeriodical(Periodical indexPeriodical, boolean hasShow) {
-        if (indexPeriodical != null && (indexPeriodical.isHasShow() || hasShow)) {
+        if (indexPeriodical != null && indexPeriodical.isHasShow()) {
             return indexPeriodical;
         }
-        Page<Periodical> reslut = periodicalRepository.findByHasShowAndHasAudit(hasShow,true, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
-
+        Page<Periodical> reslut = null;
+        if (hasShow) {
+            reslut = periodicalRepository.findByHasAudit(true, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
+        } else {
+            reslut = periodicalRepository.findByHasShowAndHasAudit(true, true, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
+        }
         if (reslut != null && reslut.getContent().size() > 0) {
             return reslut.getContent().get(0);
         }
@@ -89,7 +95,7 @@ public class PeriodicalHibernateService implements PeriodicalService {
 
     @Override
     public List<Periodical> findOldBeforeAndHasShow(Date publishDate, boolean hasShow, int pageNumber, int pageSize) {
-        return periodicalRepository.findByPublishDateBeforeAndHasShowAndHasAudit(publishDate,hasShow,  true, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
+        return periodicalRepository.findByPublishDateBeforeAndHasShowAndHasAudit(publishDate, hasShow, true, new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "publishDate")));
     }
 
 }
