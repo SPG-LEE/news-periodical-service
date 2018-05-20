@@ -58,13 +58,13 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public void save(Article entity) {
-        if (entity.getEditionId() != 0) {
+        if (entity.getPeriodicalId() != 0) {
             Optional<Periodical> findResult = periodicalRepository.findById(entity.getPeriodicalId());
             if (findResult != null && findResult.get() != null) {
                 entity.setPeriodical(findResult.get().getTitle());
             }
         }
-        if (entity.getPeriodicalId() != 0) {
+        if (entity.getEditionId() != 0) {
             Optional<PeriodicalEdition> findResult = editionRepository.findById(entity.getEditionId());
             if (findResult != null && findResult.get() != null) {
                 entity.setEditionPeriod(findResult.get().getTitle());
