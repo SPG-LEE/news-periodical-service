@@ -110,7 +110,7 @@ public class JobServiceImpl implements JobService {
             userId = userIdJson.getString("OpenId");
         }
         List<User> findUsers = userRepository.findByUserId(userId);
-        if (findUsers.size()>0){
+        if (findUsers.size() > 0) {
             return findUsers.get(0);
         }
         return null;
@@ -122,22 +122,22 @@ public class JobServiceImpl implements JobService {
         String userId = null;
         StringBuffer departmentIds = new StringBuffer();
         StringBuffer userIds = new StringBuffer();
-        if (publishMessageBean.getDepartmentIds() != null) {
+        if (publishMessageBean.getDepartmentIds() != null && publishMessageBean.getDepartmentIds().size() > 0) {
             for (String departmentIdStr : publishMessageBean.getDepartmentIds()) {
                 departmentIds.append(departmentIdStr);
                 departmentIds.append("|");
             }
             departmentIds.setLength(departmentIds.length() - 1);
             departmentId = departmentIds.toString();
-        } else if(publishMessageBean.getUserIds()!=null) {
+        } else if (publishMessageBean.getUserIds() != null && publishMessageBean.getUserIds().size()>0) {
             for (String userIdStr : publishMessageBean.getUserIds()) {
                 userIds.append(userIdStr);
                 userIds.append("|");
             }
             userIds.setLength(userIds.length() - 1);
             userId = userIds.toString();
-        }else{
-                userId = "@all";
+        } else {
+            userId = "@all";
         }
         Optional<Periodical> periodicalOptional = periodicalRepository.findById(publishMessageBean.getPeriodicalId());
         if (periodicalOptional == null) {
@@ -149,6 +149,6 @@ public class JobServiceImpl implements JobService {
         if (editions.size() > 0) {
             picUrl = editions.get(0).getImage();
         }
-      return  QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getTitle(), periodical.getDescription(), departmentId, userId);
+        return QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getTitle(), periodical.getDescription(), departmentId, userId);
     }
 }

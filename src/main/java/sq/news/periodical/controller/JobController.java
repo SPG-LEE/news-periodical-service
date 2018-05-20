@@ -16,6 +16,7 @@ import sq.news.periodical.service.JobService;
 import sq.news.periodical.util.QyWeixinUtil;
 import sq.util.AppResultBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -73,7 +74,6 @@ public class JobController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
-        List<String> departmentIdList = publishMessageBean.getDepartmentIds();
         String message = jobService.sendMessage(publishMessageBean);
         return AppResultBuilder.buildSuccessMessageResult(message,RestConstans.FIND_SUCCESS.getName());
     }
@@ -90,6 +90,11 @@ public class JobController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        List<String> testUserId = new ArrayList<>();
+        testUserId.add("18501657563");
+        testUserId.add("107944");
+        testUserId.add("105579");
+        publishMessageBean.setUserIds(testUserId);
         String message = jobService.sendMessage(publishMessageBean);
         return AppResultBuilder.buildSuccessMessageResult(message,RestConstans.FIND_SUCCESS.getName());
     }
