@@ -54,6 +54,12 @@ public class PeriodicalEdition extends BaseEntity {
 	@ApiModelProperty(value = "图片")
 	@JsonProperty
 	private String image;
+	@ApiModelProperty(value = "图片高度")
+	@JsonProperty
+	private String imageHeight;
+	@ApiModelProperty(value = "图片宽度")
+	@JsonProperty
+	private String imageWidth;
 	@ApiModelProperty(value = "图片名称")
 	@JsonProperty
 	private String imageName;
@@ -65,6 +71,22 @@ public class PeriodicalEdition extends BaseEntity {
 	@ApiModelProperty(value = "阅读数量")
 	@JsonProperty
 	private List<HotZone> hotZones = new ArrayList<>();
+
+	public String getImageHeight() {
+		return imageHeight;
+	}
+
+	public void setImageHeight(String imageHeight) {
+		this.imageHeight = imageHeight;
+	}
+
+	public String getImageWidth() {
+		return imageWidth;
+	}
+
+	public void setImageWidth(String imageWidth) {
+		this.imageWidth = imageWidth;
+	}
 
 	public String getPeriodicalName() {
 		return periodicalName;
