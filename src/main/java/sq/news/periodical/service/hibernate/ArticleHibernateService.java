@@ -81,7 +81,7 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public List<ArticleComment> findComments(long articleId) {
-        return articleCommentRepository.findByArticleIdAndAndHasShow(articleId, true);
+        return articleCommentRepository.findByArticleIdAndAndHasShow(articleId, true,new Sort(Sort.Direction.DESC,"updateDate"));
     }
 
     @Override
