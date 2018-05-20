@@ -114,7 +114,7 @@ public class QyWeixinUtil {
         return null;
     }
 
-    public static String sendMessage(RedisTemplate redisTemplate, String url, String picurl, String title, String description, String departmentId, String userId) {
+    public static String sendMessage(RedisTemplate redisTemplate, String url, String picurl,long id, String title, String description, String departmentId, String userId) {
         String token = getToken(redisTemplate,TEST_CORPSECRET);
         JSONObject params = new JSONObject();
         if (userId != null) {
@@ -132,7 +132,7 @@ public class QyWeixinUtil {
         article.put("description", description);
         String redirectUrl = null;
         try {
-            redirectUrl = GET_AUTHCODE_URL + "?appid=" + CORPID + "&redirect_uri=" + URLEncoder.encode(url, "UTF-8") + "&response_type=code&scope=snsapi_base#wechat_redirect";
+            redirectUrl = GET_AUTHCODE_URL + "?appid=" + CORPID + "&redirect_uri=" + URLEncoder.encode(url, "UTF-8") + "&response_type=code&scope=snsapi_base&state="+id+"#wechat_redirect";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

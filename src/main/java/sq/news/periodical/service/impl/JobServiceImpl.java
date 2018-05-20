@@ -149,6 +149,6 @@ public class JobServiceImpl implements JobService {
         if (editions.size() > 0) {
             picUrl = editions.get(0).getImage();
         }
-        return QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getTitle(), periodical.getDescription(), departmentId, userId);
+        return QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl,periodical.getId(), periodical.getTitle(), periodical.getDescription(), departmentId, userId);
     }
 }
