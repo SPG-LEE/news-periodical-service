@@ -28,7 +28,9 @@ public class EditionHibernateService implements EditionService {
     @Override
     public PeriodicalEdition findById(long id) {
         if (editionRepository.findById(id).isPresent()) {
-            return editionRepository.findById(id).get();
+            PeriodicalEdition result = editionRepository.findById(id).get();
+            result.setHotZones(hotZoneRepository.findByEditionId(id));
+            return result;
         }
         return null;
     }
