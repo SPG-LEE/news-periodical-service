@@ -83,6 +83,8 @@ public class PeriodicalController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        periodical.setAuthorId(adminAppResult.getData().getId());
+        periodical.setAuthor(adminAppResult.getData().getName());
         periodicalService.save(periodical);
         return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
     }
@@ -100,6 +102,8 @@ public class PeriodicalController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        periodical.setAuthorId(adminAppResult.getData().getId());
+        periodical.setAuthor(adminAppResult.getData().getName());
         if (id != periodical.getId()) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.SUBMIT_ERROR.getName());
         }
@@ -200,7 +204,7 @@ public class PeriodicalController {
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "修改期刊")
+    @ApiOperation(value = "删除期刊")
     public AppResult<Void> update(@RequestHeader("x-access-token") final
                                   String token, @PathVariable long id) {
         AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);

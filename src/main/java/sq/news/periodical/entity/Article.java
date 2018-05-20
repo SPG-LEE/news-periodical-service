@@ -52,13 +52,16 @@ public class Article extends BaseEntity {
 	@ApiModelProperty(value = "期刊Id")
 	@JsonProperty
 	private long periodicalId;
+	@ApiModelProperty(value = "期刊标题")
+	@JsonProperty
+	private String periodical;
 	@ApiModelProperty(value = "版次Id")
 	@JsonProperty
 	private long editionId;
 	@ApiModelProperty(value = "正文")
 	@JsonProperty
 	private String content;
-	@ApiModelProperty(value = "版期")
+	@ApiModelProperty(value = "版次名")
 	@JsonProperty
 	private String editionPeriod;
 	@ApiModelProperty(value = "封面图片")
@@ -177,5 +180,13 @@ public class Article extends BaseEntity {
 
 	public void setComments(List<ArticleComment> comments) {
 		this.comments = comments;
+	}
+
+	public String getPeriodical() {
+		return periodical;
+	}
+
+	public void setPeriodical(String periodical) {
+		this.periodical = periodical;
 	}
 }

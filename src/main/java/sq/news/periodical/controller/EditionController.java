@@ -7,9 +7,11 @@ import sq.base.AppResult;
 import sq.base.ServiceResult;
 import sq.bean.Admin;
 import sq.constans.RestConstans;
+import sq.news.periodical.entity.Article;
 import sq.news.periodical.entity.Periodical;
 import sq.news.periodical.entity.PeriodicalEdition;
 import sq.news.periodical.service.AdminRedisService;
+import sq.news.periodical.service.ArticleService;
 import sq.news.periodical.service.EditionService;
 import sq.news.periodical.service.PeriodicalService;
 import sq.util.AppResultBuilder;
@@ -21,6 +23,8 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/editions")
 public class EditionController {
+    @Autowired
+    private ArticleService articleService;
     @Autowired
     private EditionService editionService;
     @Autowired
@@ -64,7 +68,22 @@ public class EditionController {
         PeriodicalEdition result = editionService.findById(id);
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
+    @GetMapping("/{id}/articles")
+    @ApiOperation(value = "获取版次文章列表")
+    public AppResult<List<Article>> findArticlesById(@RequestHeader("x-access-token") final
+                                                 String token, @PathVariable long id) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "edition:list");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
+        }
+        List<Article> result = articleService.findByEditionId(id);
+        return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
+    }
     @PostMapping
     @ApiOperation(value = "保存版次")
     public AppResult<PeriodicalEdition> save(@RequestHeader("x-access-token") final
@@ -78,6 +97,8 @@ public class EditionController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        periodical.setAuthorId(adminAppResult.getData().getId());
+        periodical.setAuthor(adminAppResult.getData().getName());
         if (periodical.getPeriodicalId()!=0) {
             Periodical findPeriodical = periodicalService.findById(periodical.getPeriodicalId());
             if (findPeriodical != null)
@@ -101,6 +122,8 @@ public class EditionController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        periodical.setAuthorId(adminAppResult.getData().getId());
+        periodical.setAuthor(adminAppResult.getData().getName());
         if (id != periodical.getId()) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.SUBMIT_ERROR.getName());
         }

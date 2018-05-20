@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ArticleService {
 	Article findById(long id);
+	Article findByIdAndHasAudit(long id);
 	ServiceResult<List<Article>> findAll(int pageSize, int pageNum, String title);
 	void save(Article entity);
 	void update(Article entity);
@@ -18,4 +19,6 @@ public interface ArticleService {
     void updateAll(List<Article> needUpdate);
 
 	Article findByIdAndHasShow(long id);
+
+	List<Article> findByEditionId(long id);
 }

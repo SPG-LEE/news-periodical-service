@@ -37,10 +37,8 @@ public class JobServiceImpl implements JobService {
     private EditionRepository editionRepository;
     @Autowired
     private RedisTemplate redisTemplate;
-    private final static String SYN_USER_CRON = "59 59 23 * * ?";
 
     @Override
-    @Scheduled(cron = SYN_USER_CRON)
     public void synUser() {
         String departmentsJson = QyWeixinUtil.getDepartments(redisTemplate);
         if (departmentsJson != null) {

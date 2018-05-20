@@ -15,7 +15,6 @@ import sq.news.periodical.service.AdminRedisService;
 import sq.news.periodical.service.ArticleService;
 import sq.util.AppResultBuilder;
 import sq.util.FormatUtil;
-import sq.util.JsonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ public class ArticleController {
             Article result = articleService.findByIdAndHasShow(id);
             return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
         }
-        Article result = articleService.findById(id);
+        Article result = articleService.findByIdAndHasAudit(id);
         if (result == null){
             return AppResultBuilder.buildFailedMessageResult(RestConstans.FIND_FAILED.getName());
         }
@@ -117,6 +116,8 @@ public class ArticleController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        periodical.setAuthorId(adminAppResult.getData().getId());
+        periodical.setAuthor(adminAppResult.getData().getName());
         articleService.save(periodical);
         return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
     }
@@ -134,6 +135,8 @@ public class ArticleController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
+        periodical.setAuthorId(adminAppResult.getData().getId());
+        periodical.setAuthor(adminAppResult.getData().getName());
         if (id != periodical.getId()) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.SUBMIT_ERROR.getName());
         }
