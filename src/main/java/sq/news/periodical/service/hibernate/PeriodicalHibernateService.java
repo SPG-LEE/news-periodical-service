@@ -28,7 +28,10 @@ public class PeriodicalHibernateService implements PeriodicalService {
         }
         return null;
     }
-
+    @Override
+    public Periodical findByIdHasAudit(long id) {
+        return periodicalRepository.findByIdAndHasAudit(id,true);
+    }
     @Override
     public Periodical findByIdAndHasShow(Long id, boolean hasShow) {
         return periodicalRepository.findByIdAndHasShowAndHasAudit(id, hasShow, true);
@@ -71,7 +74,7 @@ public class PeriodicalHibernateService implements PeriodicalService {
         if (indexPeriodical != null && (indexPeriodical.isHasShow() || hasShow)) {
             return indexPeriodical;
         }
-        Page<Periodical> reslut = periodicalRepository.findByHasShow(hasShow, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
+        Page<Periodical> reslut = periodicalRepository.findByHasShowAndHasAudit(hasShow,true, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "publishDate")));
 
         if (reslut != null && reslut.getContent().size() > 0) {
             return reslut.getContent().get(0);

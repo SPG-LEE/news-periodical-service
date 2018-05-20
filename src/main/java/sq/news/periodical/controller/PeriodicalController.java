@@ -233,7 +233,7 @@ public class PeriodicalController {
             hasShow = false;
         }
         if (id != null) {
-            indexPeriodical = periodicalService.findById(id);
+            indexPeriodical = periodicalService.findByIdHasAudit(id);
         }
         Periodical result = periodicalService.findNewestPeriodical(indexPeriodical, hasShow);
         joinEdition(result);

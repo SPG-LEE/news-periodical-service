@@ -17,6 +17,8 @@ public interface PeriodicalService {
 
 	List<Periodical> findOldBefore(Date publishDate, int pageNumber, int pageSize);
 
+	Periodical findByIdHasAudit(long id);
+
 	Periodical findByIdAndHasShow(Long id, boolean hasShow);
 
 	List<Periodical> findOldBeforeAndHasShow(Date publishDate, boolean hasShow, int pageNumber, int pageSize);
