@@ -43,6 +43,9 @@ public class Periodical extends BaseEntity {
 	@ApiModelProperty(value = "期刊摘要")
 	@JsonProperty
 	private String description;
+	@ApiModelProperty(value = "主图")
+	@JsonProperty
+	private String mainImage;
 	@ApiModelProperty(value = "作者名")
 	@JsonProperty
 	private String author;
@@ -67,6 +70,14 @@ public class Periodical extends BaseEntity {
 	@ApiModelProperty(value = "版次")
 	@JsonProperty
 	private List<PeriodicalEdition> editions = new ArrayList<>();
+
+	public String getMainImage() {
+		return mainImage;
+	}
+
+	public void setMainImage(String mainImage) {
+		this.mainImage = mainImage;
+	}
 
 	public long getReadCount() {
 		return readCount;

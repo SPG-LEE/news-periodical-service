@@ -110,7 +110,24 @@ public class PeriodicalController {
         periodicalService.update(periodical);
         return AppResultBuilder.buildSuccessMessageResult(periodical, RestConstans.FIND_SUCCESS.getName());
     }
+    @PutMapping("/{id}/image")
+    @ApiOperation(value = "修改期刊")
+    public AppResult<Periodical> saveImage(@RequestHeader("x-access-token") final
+                                        String token, @PathVariable long id, @RequestBody Periodical periodical) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "periodical:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
+        }
+        Periodical dbPeriodical = periodicalService.findById(id);
+        dbPeriodical.setMainImage(periodical.getMainImage());
+        periodicalService.update(dbPeriodical);
+        return AppResultBuilder.buildSuccessMessageResult(dbPeriodical, RestConstans.FIND_SUCCESS.getName());
+    }
     @PutMapping("/show")
     @ApiOperation(value = "审核期刊")
     public AppResult<List<Periodical>> show(@RequestHeader("x-access-token") final
