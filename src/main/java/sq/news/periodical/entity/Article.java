@@ -178,7 +178,11 @@ public class Article extends BaseEntity {
     }
 
     public void setContent(String content) {
-        contentByte = content.getBytes();
+        try {
+            contentByte = content.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getEditionPeriod() {
