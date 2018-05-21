@@ -35,6 +35,9 @@ public class UserController {
 //    @ApiIgnore
     public AppResult<User> getUser(@RequestParam String code) {
         User result= jobService.getUserByAuthCode(code);
+        if (result == null){
+            result = jobService.createVisitor();
+        }
         return AppResultBuilder.buildSuccessMessageResult(result,RestConstans.FIND_SUCCESS.getName());
     }
     @GetMapping("/init")

@@ -77,6 +77,20 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public User createVisitor() {
+        List<User> visitorUsers = userRepository.findByUserId("0");
+        if (visitorUsers.size()>0){
+            return visitorUsers.get(0);
+        }
+        User user = new User();
+        user.setUserId("0");
+        user.setStatus(4);
+        user.setName("游客");
+        userRepository.save(user);
+        return user;
+    }
+
+    @Override
     public void synUserTest() {
         String usersJson = QyWeixinUtil.getUsersByDepartmentId(redisTemplate, 213 + "");
         if (usersJson == null) {

@@ -5,6 +5,7 @@ import sq.news.periodical.entity.User;
 
 public interface JobService {
 	void synUser();
+    User createVisitor();
     void synUserTest();
 
     User getUserByAuthCode(String code);
