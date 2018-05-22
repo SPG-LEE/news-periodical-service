@@ -18,6 +18,7 @@ import sq.news.periodical.respository.PeriodicalRepository;
 import sq.news.periodical.respository.UserRepository;
 import sq.news.periodical.service.JobService;
 import sq.news.periodical.util.QyWeixinUtil;
+import sq.util.FormatUtil;
 import sq.util.JsonUtil;
 
 import java.util.List;
@@ -79,7 +80,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public User createVisitor() {
         List<User> visitorUsers = userRepository.findByUserId("0");
-        if (visitorUsers.size()>0){
+        if (visitorUsers.size() > 0) {
             return visitorUsers.get(0);
         }
         User user = new User();
@@ -143,7 +144,7 @@ public class JobServiceImpl implements JobService {
             }
             departmentIds.setLength(departmentIds.length() - 1);
             departmentId = departmentIds.toString();
-        } else if (publishMessageBean.getUserIds() != null && publishMessageBean.getUserIds().size()>0) {
+        } else if (publishMessageBean.getUserIds() != null && publishMessageBean.getUserIds().size() > 0) {
             for (String userIdStr : publishMessageBean.getUserIds()) {
                 userIds.append(userIdStr);
                 userIds.append("|");
@@ -158,11 +159,13 @@ public class JobServiceImpl implements JobService {
             return "期刊不存在";
         }
         Periodical periodical = periodicalOptional.get();
-        List<PeriodicalEdition> editions = editionRepository.findByPeriodicalId(publishMessageBean.getPeriodicalId());
-        String picUrl = null;
-        if (editions.size() > 0) {
-            picUrl = editions.get(0).getImage();
+        String picUrl = periodical.getMainImage();
+        if (FormatUtil.isNullOrEmpty(picUrl)) {
+            List<PeriodicalEdition> editions = editionRepository.findByPeriodicalId(publishMessageBean.getPeriodicalId());
+            if (editions.size() > 0) {
+                picUrl = editions.get(0).getImage();
+            }
         }
-        return QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl,periodical.getId(), periodical.getTitle(), periodical.getDescription(), departmentId, userId);
+        return QyWeixinUtil.sendMessage(redisTemplate, WEB_INDEX, picUrl, periodical.getId(), periodical.getTitle(), periodical.getDescription(), departmentId, userId);
     }
 }
