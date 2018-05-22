@@ -73,7 +73,7 @@ public class PeriodicalHibernateService implements PeriodicalService {
 
     @Override
     public Periodical findNewestPeriodical(Periodical indexPeriodical, boolean hasShow) {
-        if (indexPeriodical != null && indexPeriodical.isHasShow()) {
+        if (indexPeriodical != null && (indexPeriodical.isHasShow() || hasShow)) {
             return indexPeriodical;
         }
         Page<Periodical> reslut = null;
