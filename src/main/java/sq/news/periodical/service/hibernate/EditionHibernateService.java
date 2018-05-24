@@ -15,8 +15,11 @@ import sq.news.periodical.service.EditionService;
 import sq.util.FormatUtil;
 import sq.util.ServiceResultBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EditionHibernateService implements EditionService {
@@ -47,30 +50,39 @@ public class EditionHibernateService implements EditionService {
     }
 
     @Override
-    public void save(PeriodicalEdition entity) {
-        editionRepository.saveAndFlush(entity);
-        hotZoneRepository.deleteAll(entity.getHotZones());
+    public void update(PeriodicalEdition entity) {
+        entity.setUpdateDate(new Date());
+        List<HotZone> oldHotZones = hotZoneRepository.findByEditionId(entity.getId());
+        List<Long> oldIdList = oldHotZones.stream().map(HotZone::getId).collect(Collectors.toList());
+        List<Long> newIdList = entity.getHotZones().stream().map(HotZone::getId).collect(Collectors.toList());
+        oldIdList.removeAll(newIdList);
+        oldIdList.stream().forEach(newId->{
+            hotZoneRepository.deleteById(newId);
+        });
+       List<HotZone> needMerges = new ArrayList<>();
         if (entity.getHotZones().size()>0){
             entity.getHotZones().stream().forEach(hotZone->{
-                hotZone.setId(null);
-                hotZone.setEditionId(entity.getId());
+                Optional<HotZone> findHotZone = hotZoneRepository.findById(hotZone.getId());
+                if (findHotZone!=null&&findHotZone.isPresent()){
+                    HotZone needMerge = findHotZone.get();
+                    needMerge.copyFrom(hotZone);
+                    needMerges.add(needMerge);
+                }
             });
-            hotZoneRepository.saveAll(entity.getHotZones());
+            hotZoneRepository.saveAll(needMerges);
         }
+        editionRepository.saveAndFlush(entity);
     }
 
     @Override
-    public void update(PeriodicalEdition entity) {
-        entity.setUpdateDate(new Date());
-        hotZoneRepository.deleteAll(entity.getHotZones());
+    public void save(PeriodicalEdition entity) {
+        editionRepository.saveAndFlush(entity);
         if (entity.getHotZones().size()>0){
             entity.getHotZones().stream().forEach(hotZone->{
-                hotZone.setId(null);
                 hotZone.setEditionId(entity.getId());
             });
             hotZoneRepository.saveAll(entity.getHotZones());
         }
-        editionRepository.saveAndFlush(entity);
     }
 
     @Override

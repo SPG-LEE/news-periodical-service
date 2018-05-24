@@ -77,4 +77,11 @@ public class HotZone extends BaseEntity {
 	public void setEditionId(long editionId) {
 		this.editionId = editionId;
 	}
+
+	public void copyFrom(HotZone hotZone) {
+		this.articleId = hotZone.getArticleId();
+		this.editionId = hotZone.getEditionId();
+		this.mapInfo = hotZone.getMapInfo();
+		this.title = hotZone.getTitle();
+	}
 }
