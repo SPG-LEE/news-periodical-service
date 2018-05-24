@@ -62,6 +62,11 @@ public class EditionHibernateService implements EditionService {
        List<HotZone> needMerges = new ArrayList<>();
         if (entity.getHotZones().size()>0){
             entity.getHotZones().stream().forEach(hotZone->{
+                if (hotZone.getId()==null){
+                    hotZone.setEditionId(entity.getId());
+                    needMerges.add(hotZone);
+                    return;
+                }
                 Optional<HotZone> findHotZone = hotZoneRepository.findById(hotZone.getId());
                 if (findHotZone!=null&&findHotZone.isPresent()){
                     HotZone needMerge = findHotZone.get();
