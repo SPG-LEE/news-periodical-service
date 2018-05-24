@@ -49,8 +49,10 @@ public class EditionHibernateService implements EditionService {
     @Override
     public void save(PeriodicalEdition entity) {
         editionRepository.saveAndFlush(entity);
+        hotZoneRepository.deleteAll(entity.getHotZones());
         if (entity.getHotZones().size()>0){
             entity.getHotZones().stream().forEach(hotZone->{
+                hotZone.setId(null);
                 hotZone.setEditionId(entity.getId());
             });
             hotZoneRepository.saveAll(entity.getHotZones());
@@ -60,8 +62,10 @@ public class EditionHibernateService implements EditionService {
     @Override
     public void update(PeriodicalEdition entity) {
         entity.setUpdateDate(new Date());
+        hotZoneRepository.deleteAll(entity.getHotZones());
         if (entity.getHotZones().size()>0){
             entity.getHotZones().stream().forEach(hotZone->{
+                hotZone.setId(null);
                 hotZone.setEditionId(entity.getId());
             });
             hotZoneRepository.saveAll(entity.getHotZones());
