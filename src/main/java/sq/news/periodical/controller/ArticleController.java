@@ -80,13 +80,72 @@ public class ArticleController {
             return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
         }
         Article result = articleService.findByIdAndHasAudit(id);
-        if (result == null){
+        if (result == null) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.FIND_FAILED.getName());
         }
         result.setComments(articleService.findComments(id));
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
 
+    @GetMapping("/{id}/comment")
+    @ApiOperation(value = "获取评论列表")
+    public AppResult<List<ArticleComment>> findComments(@RequestHeader("x-access-token") final
+                                                        String token, @PathVariable long id, @RequestParam(required = false, defaultValue = "0") int pageNumber
+            , @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:list");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<ArticleComment> comments = articleService.findComments(id, pageNumber, pageSize);
+        long count = articleService.countComments(id);
+        return AppResultBuilder.buildSuccessMessageResult(comments, RestConstans.FIND_SUCCESS.getName(), count);
+    }
+
+    @PostMapping("/comment/approve")
+    @ApiOperation(value = "批量审核评论")
+    public AppResult<Void> approveComments(@RequestHeader("x-access-token") final
+                                                           String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<ArticleComment> results= articleService.findCommentsByIds(ids);
+        results.stream().forEach(result->{
+            result.setHasAudit(true);
+        });
+        articleService.saveAllComments(results);
+        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+    }
+    @PostMapping("/comment/unApprove")
+    @ApiOperation(value = "批量反审核评论")
+    public AppResult<Void> unApproveComments(@RequestHeader("x-access-token") final
+                                           String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<ArticleComment> results= articleService.findCommentsByIds(ids);
+        results.stream().forEach(result->{
+            result.setHasAudit(false);
+        });
+        articleService.saveAllComments(results);
+        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+    }
     @PostMapping("/web/{id}/comment")
     @ApiOperation(value = "评论")
     public AppResult<String> saveComment(@PathVariable long id, @RequestBody ArticleComment comment) {

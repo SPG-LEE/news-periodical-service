@@ -12,5 +12,11 @@ import java.util.List;
 public interface ArticleCommentRepository extends JpaRepository<ArticleComment, Long>,
 		ArticleCommentCustomRepository {
 
-	List<ArticleComment> findByArticleIdAndAndHasShow(long articleId, boolean hasShow, Sort sort);
+	List<ArticleComment> findByArticleIdAndHasShowAndHasAudit(long articleId, boolean hasShow, boolean hasAudit, Sort sort);
+
+	List<ArticleComment> findByArticleId(long articleId, Pageable pageable);
+
+	long countByArticleId(long articleId);
+
+	List<ArticleComment> findByIdIn(List<Long> ids);
 }

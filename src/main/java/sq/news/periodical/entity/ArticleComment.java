@@ -48,6 +48,17 @@ public class ArticleComment extends BaseEntity {
 	@ApiModelProperty(value = "是否展示")
 	@JsonProperty
 	private boolean hasShow = true;
+	@ApiModelProperty(value = "是否审核")
+	@JsonProperty
+	private boolean hasAudit = false;
+
+	public boolean isHasAudit() {
+		return hasAudit;
+	}
+
+	public void setHasAudit(boolean hasAudit) {
+		this.hasAudit = hasAudit;
+	}
 
 	public long getArticleId() {
 		return articleId;

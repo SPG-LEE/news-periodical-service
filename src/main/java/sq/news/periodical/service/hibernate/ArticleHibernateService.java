@@ -38,6 +38,7 @@ public class ArticleHibernateService implements ArticleService {
     public Article findByIdAndHasAudit(long id) {
         return articleRepository.findByIdAndHasAudit(id, true);
     }
+
     @Override
     public Article findById(long id) {
         if (articleRepository.findById(id).isPresent()) {
@@ -45,6 +46,7 @@ public class ArticleHibernateService implements ArticleService {
         }
         return null;
     }
+
     @Override
     public ServiceResult<List<Article>> findAll(int pageSize, int pageNum, String title) {
         Page<Article> result;
@@ -81,7 +83,21 @@ public class ArticleHibernateService implements ArticleService {
 
     @Override
     public List<ArticleComment> findComments(long articleId) {
-        return articleCommentRepository.findByArticleIdAndAndHasShow(articleId, true,new Sort(Sort.Direction.DESC,"updateDate"));
+        return articleCommentRepository.findByArticleIdAndHasShowAndHasAudit(articleId, true, true, new Sort(Sort.Direction.DESC, "updateDate"));
+    }
+
+    @Override
+    public List<ArticleComment> findComments(long articleId, int pageNum, int pageSize) {
+
+        return articleCommentRepository.findByArticleId(articleId, new PageRequest(pageNum, pageSize, new Sort(Sort.Direction.DESC, "updateDate")));
+
+    }
+
+    @Override
+    public long countComments(long articleId) {
+
+        return articleCommentRepository.countByArticleId(articleId);
+
     }
 
     @Override
@@ -107,6 +123,16 @@ public class ArticleHibernateService implements ArticleService {
     @Override
     public List<Article> findByEditionId(long id) {
         return articleRepository.findByEditionId(id);
+    }
+
+    @Override
+    public List<ArticleComment> findCommentsByIds(List<Long> ids) {
+        return articleCommentRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public void saveAllComments(List<ArticleComment> results) {
+        articleCommentRepository.saveAll(results);
     }
 
 }
