@@ -83,6 +83,8 @@ public class ArticleController {
         if (result == null) {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.FIND_FAILED.getName());
         }
+        long newCount = result.getReadCount() + 1;
+        result.setReadCount(newCount);
         result.setComments(articleService.findComments(id));
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
@@ -109,26 +111,6 @@ public class ArticleController {
     @PostMapping("/comment/approve")
     @ApiOperation(value = "批量审核评论")
     public AppResult<Void> approveComments(@RequestHeader("x-access-token") final
-                                                           String token, @RequestBody List<Long> ids) {
-        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
-        if (!adminAppResult.isSuccess()) {
-            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
-        }
-        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
-        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
-            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
-
-        }
-        List<ArticleComment> results= articleService.findCommentsByIds(ids);
-        results.stream().forEach(result->{
-            result.setHasAudit(true);
-        });
-        articleService.saveAllComments(results);
-        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
-    }
-    @PostMapping("/comment/unApprove")
-    @ApiOperation(value = "批量反审核评论")
-    public AppResult<Void> unApproveComments(@RequestHeader("x-access-token") final
                                            String token, @RequestBody List<Long> ids) {
         AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
         if (!adminAppResult.isSuccess()) {
@@ -139,13 +121,35 @@ public class ArticleController {
             return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
 
         }
-        List<ArticleComment> results= articleService.findCommentsByIds(ids);
-        results.stream().forEach(result->{
+        List<ArticleComment> results = articleService.findCommentsByIds(ids);
+        results.stream().forEach(result -> {
+            result.setHasAudit(true);
+        });
+        articleService.saveAllComments(results);
+        return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
+    }
+
+    @PostMapping("/comment/unApprove")
+    @ApiOperation(value = "批量反审核评论")
+    public AppResult<Void> unApproveComments(@RequestHeader("x-access-token") final
+                                             String token, @RequestBody List<Long> ids) {
+        AppResult<Admin> adminAppResult = adminRedisService.getAdmin(token);
+        if (!adminAppResult.isSuccess()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_ADMIN.getName());
+        }
+        AppResult<Boolean> permissionResult = adminRedisService.hasPermission(token, "article:edit");
+        if (!permissionResult.isSuccess() || !permissionResult.getData()) {
+            return AppResultBuilder.buildFailedMessageResult(RestConstans.NO_PERMISSION.getName());
+
+        }
+        List<ArticleComment> results = articleService.findCommentsByIds(ids);
+        results.stream().forEach(result -> {
             result.setHasAudit(false);
         });
         articleService.saveAllComments(results);
         return AppResultBuilder.buildSuccessMessageResult(RestConstans.FIND_SUCCESS.getName());
     }
+
     @PostMapping("/web/{id}/comment")
     @ApiOperation(value = "评论")
     public AppResult<String> saveComment(@PathVariable long id, @RequestBody ArticleComment comment) {

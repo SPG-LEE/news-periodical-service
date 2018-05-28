@@ -67,6 +67,9 @@ public class Article extends BaseEntity {
     @ApiModelProperty(value = "封面图片")
     @JsonProperty
     private String mainImage;
+    @ApiModelProperty(value = "阅读次数")
+    @JsonProperty
+    private long readCount;
     @ApiModelProperty(value = "是否审核")
     @JsonProperty
     private boolean hasAudit;
@@ -76,6 +79,14 @@ public class Article extends BaseEntity {
     @ApiModelProperty(value = "评论")
     @JsonProperty
     private List<ArticleComment> comments = new ArrayList<>();
+
+    public long getReadCount() {
+        return readCount;
+    }
+
+    public void setReadCount(long readCount) {
+        this.readCount = readCount;
+    }
 
     public boolean isHasAudit() {
         return hasAudit;
