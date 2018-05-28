@@ -85,6 +85,7 @@ public class ArticleController {
         }
         long newCount = result.getReadCount() + 1;
         result.setReadCount(newCount);
+        articleService.save(result);
         result.setComments(articleService.findComments(id));
         return AppResultBuilder.buildSuccessMessageResult(result, RestConstans.FIND_SUCCESS.getName());
     }
